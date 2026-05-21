@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pustaka Pink - Admin Review Reply</title>
+    
+    <!-- External Assets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <style>
+        /* =========================================
+           1. CSS VARIABLES (PINK NEOBRUTALISM)
+           ========================================= */
+        :root {
+            --primary: #FF6B95;       /* Hot Pink */
+            --primary-dark: #E04E7C;
+            --primary-hover: #FF8DA1;
+            --secondary: #FFD1DC;     /* Pastel Pink */
+            --accent: #FFA6C9;        /* Light Pink */
+            --bg-body: #FFF0F5;       /* Lavender Blush */
+            
+            /* Neo Borders & Shadows */
+            --border-width: 3px;
+            --border-color: #000000;
+            --neo-shadow: 6px 6px 0px 0px #000000;
+            --neo-shadow-hover: 2px 2px 0 0 #000000;
+            
+            /* Text */
+            --text-main: #4A4A4A;
+            --text-light: #2D2D2D;
+
+            /* UI Elements */
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --radius-neo: 12px; 
+
+            /* Transitions */
+            --transition: all 0.15s ease-out; 
+        }
+
+        /* =========================================
+           2. RESET & BASE STYLES
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Quicksand', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ul { list-style: none; }
+        
+        body {
+            background-color: var(--bg-body);
+            background-image: radial-gradient(var(--secondary) 20%, transparent 20%);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        h1, h2, h3, .logo, .btn, .nav-item button {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #fff; border-left: 3px solid #000; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border: 3px solid #000; border-radius: 0; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* =========================================
+           3. SIDEBAR
+           ========================================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #fff;
+            border-right: var(--border-width) solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 8px 0 0 0 #000;
+            transition: transform 0.25s ease-out; 
+            will-change: transform;
+        }
+
+        .sidebar-brand {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: var(--border-width) solid var(--border-color);
+            cursor: pointer;
+            background: var(--secondary);
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            overflow-y: auto;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 1rem;
+            border: var(--border-width) solid var(--border-color);
+            background: #fff;
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            box-shadow: 4px 4px 0 0 #000;
+            border-radius: var(--radius-neo);
+            will-change: transform, background-color;
+        }
+
+        .nav-item button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 0 #000;
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .nav-item button.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 2px 2px 0 0 #000;
+            transform: translate(2px, 2px);
+            border-color: #000;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: var(--border-width) solid var(--border-color);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            background: #fff;
+            color: var(--primary);
+        }
+
+        /* =========================================
+           4. MAIN CONTENT
+           ========================================= */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--sidebar-width));
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background: #fff;
+            border-bottom: var(--border-width) solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            box-shadow: 0 4px 0 0 rgba(0,0,0,0.1);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: #000;
+            cursor: pointer;
+            padding: 0.5rem;
+            background: var(--primary);
+            border: 3px solid #000;
+            border-radius: var(--radius-neo);
+            box-shadow: 3px 3px 0 0 #000;
+            transition: var(--transition);
+        }
+        .mobile-toggle:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 #000; }
+
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+
+        main { padding: 2rem; flex: 1; position: relative; }
+
+        /* =========================================
+           5. COMPONENTS & ANIMATIONS
+           ========================================= */
+        .page-section { display: none; animation: fadeUp 0.25s ease-out forwards; }
+        .page-section.active { display: block; }
+        
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem; 
+            border: var(--border-width) solid var(--border-color); 
+            background: #fff; 
+            border-radius: var(--radius-neo); 
+            font-weight: 700; font-size: 1rem; cursor: pointer; 
+            transition: var(--transition);
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.8rem;
+            box-shadow: var(--neo-shadow);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+            position: relative;
+            z-index: 5;
+            will-change: transform, box-shadow;
+        }
+        .btn:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0 0 #000; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 0 #000; }
+        .btn-secondary { background: var(--secondary); }
+        .btn-secondary:hover { background: #ffe0e9; transform: translate(-2px, -2px); box-shadow: 8px 8px 0 0 #000; }
+        .btn-danger { background: #FF9AA2; color: #000; }
+        .btn-danger:hover { background: #ff808b; transform: translate(-2px, -2px); box-shadow: 8px 8px 0 0 #000; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.9rem; box-shadow: 3px 3px 0 0 #000; }
+        .btn-block { width: 100%; }
+        
+        .btn:disabled {
+            background: #e0e0e0 !important; 
+            color: #999 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important; 
+            border-color: #ccc !important;
+        }
+        
+        input, select, textarea { 
+            width: 100%; padding: 1rem; 
+            border: var(--border-width) solid var(--border-color); 
+            border-radius: var(--radius-neo); font-size: 1rem; 
+            background: #fff; outline: none; transition: var(--transition); 
+            box-shadow: 4px 4px 0 0 #000; font-family: 'Quicksand', sans-serif; font-weight: 600;
+        }
+        input:focus, select:focus, textarea:focus { 
+            background: #fff; transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 #000; border-color: var(--primary); 
+        }
+
+        /* Cards & Grid */
+        .skeleton { background: #ffeef2; border: 3px solid #000; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
+        .book-card { 
+            background: #fff; border: var(--border-width) solid var(--border-color); 
+            border-radius: var(--radius-neo); overflow: hidden; 
+            display: flex; flex-direction: column; 
+            box-shadow: var(--neo-shadow); transition: var(--transition); height: 100%;
+            position: relative;
+            will-change: transform, box-shadow;
+        }
+        .book-card:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 0 #000; z-index: 2; }
+        
+        .book-card.sold-out .book-cover-wrapper::after {
+            content: "STOK HABIS";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fredoka';
+            font-weight: 800;
+            font-size: 2rem;
+            text-transform: uppercase;
+            transform: rotate(-10deg);
+            z-index: 10;
+            pointer-events: none;
+            border: 4px dashed #fff;
+            backdrop-filter: blur(2px);
+        }
+        .book-card.sold-out .book-cover { filter: grayscale(100%); transition: none !important; }
+
+        .book-cover-wrapper { height: 300px; overflow: hidden; border-bottom: var(--border-width) solid #000; background: #ffeef2; position: relative; }
+        .book-cover { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .book-card:not(.sold-out):hover .book-cover { transform: scale(1.05); }
+        .book-info { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; background: #fff; position: relative; z-index: 2; }
+        .book-category { 
+            background: var(--secondary); color: #000; font-weight: 700; font-size: 0.7rem; 
+            padding: 0.2rem 0.5rem; width: fit-content; border: 2px solid #000; margin-bottom: 0.5rem; border-radius: 4px;
+        }
+        .book-title { font-family: 'Fredoka'; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; line-height: 1.2; color: var(--primary); }
+        .book-author { color: #777; font-weight: 600; font-size: 0.9rem; margin-bottom: 1rem; }
+        .stock-badge {
+            display: inline-flex; align-items: center; gap:5px; padding: 0.4rem 0.8rem;
+            border: 2px solid #000; font-weight: 800; font-size: 0.75rem; border-radius: 20px;
+        }
+        .stock-badge.ok { background: #B9FBC0; }
+        .stock-badge.empty { background: #FFC8C8; }
+
+        .hero-banner {
+            position: relative; width: 100%; min-height: 450px;
+            background: url("https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80");
+            background-position: center; background-size: cover; background-repeat: no-repeat;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 20px; overflow: hidden; padding: 20px;
+            box-shadow: var(--neo-shadow); margin-bottom: 3rem;
+        }
+        .hero-banner::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); }
+        .hero-content { position: relative; z-index: 2; text-align: center; color: #fff; max-width: 700px; width: 100%; }
+        .hero-content h1 { font-size: 3.2rem; line-height: 1.2; margin-bottom: 15px; font-weight: 700; text-shadow: 4px 4px 0 #000; text-transform: uppercase; }
+
+        .detail-header { 
+            display: flex; gap: 2rem; margin-bottom: 2rem; 
+            background: #fff; padding: 2rem; border-radius: var(--radius-neo); 
+            border: var(--border-width) solid #000; box-shadow: var(--neo-shadow); 
+            flex-wrap: wrap; position: relative; z-index: 10;
+        }
+        .detail-cover { width: 240px; height: 360px; object-fit: cover; border: 3px solid #000; border-radius: var(--radius-neo); }
+        .detail-meta { flex: 1; min-width: 300px; position: relative; z-index: 15; }
+        .detail-meta h1 { font-family: 'Fredoka'; font-size: 2.2rem; color: var(--primary); line-height: 1.1; margin: 0.5rem 0; text-transform: uppercase; }
+        .rating-display { color: #000; background: var(--secondary); display: inline-block; padding: 0.4rem 1rem; border: 2px solid #000; font-weight: 800; border-radius: 20px; }
+
+        .panel { background: #fff; padding: 2rem; border-radius: var(--radius-neo); border: 3px solid #000; box-shadow: var(--neo-shadow); margin-bottom: 2rem; position: relative; z-index: 5; }
+        .table-responsive { width: 100%; overflow-x: auto; border: 3px solid #000; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: var(--primary); color: #fff; padding: 1rem; text-align: left; text-transform: uppercase; font-weight: 700; border-bottom: 3px solid #000; }
+        .data-table td { padding: 1rem; border-bottom: 2px solid #eee; background: #fff; vertical-align: middle;}
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: #fff0f5; }
+
+        .filters { background: #fff; padding: 1.5rem; border-radius: var(--radius-neo); border: 3px solid #000; box-shadow: var(--neo-shadow); margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+        .filter-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+        .filter-label { font-weight: 800; font-size: 0.9rem; min-width: 80px; }
+
+        .tag-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag-btn { background: #fff; border: 2px solid #000; padding: 0.5rem 1.2rem; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: 3px 3px 0 0 #000; transition: var(--transition); font-size: 0.9rem; }
+        .tag-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 0 #000; }
+        .tag-btn.active { background: var(--primary); color: #fff; box-shadow: 1px 1px 0 0 #000; transform: translate(2px, 2px); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); }
+        .modal.show { display: flex; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: var(--radius-neo); border: 4px solid #000; width: 100%; max-width: 700px; box-shadow: 10px 10px 0 0 #000; animation: modalPop 0.2s ease-out; max-height: 90vh; overflow-y: auto; position: relative; z-index: 1000000; }
+        @keyframes modalPop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .close-btn { position: absolute; top: 1rem; right: 1rem; background: #FF9AA2; border: 2px solid #000; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; box-shadow: 3px 3px 0 0 #000; z-index: 10; transition: var(--transition); }
+        .close-btn:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 #000; }
+
+        /* =========================================
+           6. FORM GRID LAYOUT
+           ========================================= */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .form-full {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        .file-upload-zone {
+            border: 3px dashed #000;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: var(--radius-neo);
+            transition: var(--transition);
+            background: #fafafa;
+            position: relative;
+        }
+        .file-upload-zone:hover {
+            background: #ffeef2;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 0 #000;
+        }
+        .file-upload-zone input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* =========================================
+           7. PREMIUM QR PAYMENT STYLES
+           ========================================= */
+        .qr-payment-wrapper {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+        .qr-header { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #333; }
+        .qr-timer {
+            font-family: 'Fredoka'; font-size: 1.8rem; color: var(--primary); font-weight: 800;
+            margin-bottom: 1.5rem; border: 2px solid #000; padding: 0.4rem 1.5rem;
+            border-radius: 50px; background: #fff; box-shadow: 0 4px 0 0 rgba(0,0,0,0.2);
+        }
+        .qr-frame {
+            position: relative; width: 240px; height: 240px; background: #fff;
+            border: 4px solid #000; border-radius: 16px; padding: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 1.5rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .qr-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .scanner-line {
+            position: absolute; width: 100%; height: 6px; background: #00ff00;
+            box-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00; top: 0; left: 0;
+            animation: scanMove 2s infinite ease-in-out; z-index: 2; border-radius: 10px; opacity: 0.8;
+        }
+        @keyframes scanMove {
+            0% { top: 0; opacity: 0; height: 6px; }
+            10% { opacity: 1; height: 6px; }
+            40% { height: 2px; }
+            60% { height: 6px; }
+            90% { opacity: 1; height: 6px; }
+            100% { top: 100%; opacity: 0; height: 6px; }
+        }
+        .success-animation { display: none; flex-direction: column; align-items: center; text-align: center; width: 100%; }
+        .success-circle {
+            width: 90px; height: 90px; background: #4CAF50; color: #fff;
+            border: 4px solid #000; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem; margin-bottom: 1rem;
+            box-shadow: 4px 4px 0 0 #000;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+        /* =========================================
+           8. ADMIN CHART & OTHERS
+           ========================================= */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .stat-card { background: #fff; border: 3px solid #000; border-radius: var(--radius-neo); padding: 2rem; display: flex; align-items: center; gap: 1.5rem; box-shadow: var(--neo-shadow); transition: var(--transition); }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 8px 8px 0 0 #000; }
+        .stat-icon { width: 70px; height: 70px; background: var(--secondary); border: 3px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary); box-shadow: 4px 4px 0 0 #000; flex-shrink: 0; }
+        .stat-info h4 { font-family: 'Quicksand', sans-serif; font-size: 0.9rem; text-transform: uppercase; color: #666; margin-bottom: 0.3rem; font-weight: 800; }
+        .stat-number { font-family: 'Fredoka', sans-serif; font-size: 2.5rem; font-weight: 700; color: #000; line-height: 1; }
+
+        .chart-wrapper { background: #fff; border: 3px solid #000; border-radius: var(--radius-neo); padding: 2rem 2rem 4rem 4rem; box-shadow: var(--neo-shadow); position: relative; height: 400px; margin-bottom: 3rem; }
+        .chart-grid-bg { position: absolute; top: 2rem; bottom: 4rem; left: 4rem; right: 2rem; display: flex; flex-direction: column; justify-content: space-between; z-index: 0; pointer-events: none; }
+        .grid-line { width: 100%; border-top: 1px dashed #ccc; position: relative; }
+        .grid-line span { position: absolute; left: -45px; top: -10px; font-size: 0.8rem; font-weight: 700; color: #666; background: #fff; padding-right: 5px; }
+        .chart-bars-container { position: absolute; top: 2rem; bottom: 4rem; left: 4rem; right: 2rem; display: flex; align-items: flex-end; justify-content: space-around; z-index: 1; }
+        .chart-bar-group { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 12%; position: relative; }
+        .bar-visual { width: 100%; background: linear-gradient(180deg, var(--primary-hover), var(--primary)); border: 3px solid #000; border-bottom: none; border-radius: 8px 8px 0 0; transition: height 0.5s ease-out; box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1); position: relative; cursor: pointer; min-height: 4px; }
+        .bar-visual:hover { filter: brightness(1.1); transform: scaleX(1.1); z-index: 10; }
+        .bar-value { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; opacity: 0; transition: opacity 0.15s; white-space: nowrap; }
+        .chart-bar-group:hover .bar-value { opacity: 1; top: -35px; }
+        .bar-label { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); width: 150%; text-align: center; font-size: 0.8rem; font-weight: 700; line-height: 1.2; color: #333; }
+        .rank-badge { position: absolute; top: -55px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; }
+
+        .fine-alert { background: #FFC8C8; border: 3px solid #000; padding: 1rem; margin-bottom: 1.5rem; border-radius: var(--radius-neo); font-weight: 800; color: #D32F2F; text-align: center; box-shadow: 4px 4px 0 0 #000; animation: shake 0.5s; }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+
+        /* E-WALLET */
+        .ewallet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin-bottom: 2rem; }
+        .ewallet-option { border: 3px solid #e0e0e0; border-radius: var(--radius-neo); padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: var(--transition); background: #fff; display: flex; flex-direction: column; align-items: center; gap: 0.8rem; position: relative; overflow: hidden; }
+        .ewallet-option:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 5px 5px 0 0 rgba(0,0,0,0.1); }
+        .ewallet-option.selected { border-color: var(--primary); background: #fff0f5; box-shadow: inset 0 0 0 4px rgba(255, 107, 149, 0.1); }
+        .ewallet-option.selected::after { content: '✓'; position: absolute; top: 5px; right: 5px; font-weight: 800; color: var(--primary); background: #fff; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #000; display: flex; align-items: center; justify-content: center; }
+        .ewallet-icon { font-size: 2rem; font-weight: 800; }
+        .gopay-color { color: #00AED6; }
+        .ovo-color { color: #4C3494; }
+        .dana-color { color: #118EEA; }
+        .shopee-color { color: #EE4D2D; }
+        
+        #notification-container { position: fixed; top: 20px; right: 20px; z-index: 4000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #fff; padding: 1rem 1.5rem; border: 3px solid #000; box-shadow: 5px 5px 0 0 #000; display: flex; align-items: center; gap: 12px; font-weight: 700; border-radius: var(--radius-neo); min-width: 300px; animation: slideIn 0.25s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .toast.success { background: #B9FBC0; }
+        .toast.error { background: #FFC8C8; }
+        .toast.info { background: #A0C4FF; }
+
+        /* =========================================
+           9. ABOUT SECTION STYLES
+           ========================================= */
+        .marquee-wrapper { background: var(--primary); color: #fff; padding: 1rem 0; border: 3px solid #000; transform: rotate(-2deg) scale(1.02); box-shadow: 8px 8px 0 0 #000; margin: -2rem -2rem 3rem -2rem; overflow: hidden; white-space: nowrap; position: relative; }
+        .marquee-content { display: inline-block; font-family: 'Fredoka'; font-size: 2.5rem; font-weight: 800; text-transform: uppercase; animation: marquee 15s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .about-grid-v2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-bottom: 5rem; }
+        .neo-card-float { background: #fff; border: 3px solid #000; padding: 2.5rem; border-radius: 20px; box-shadow: 8px 8px 0 0 #000; transition: var(--transition); position: relative; overflow: hidden; }
+        .neo-card-float:nth-child(1) { transform: rotate(-2deg); }
+        .neo-card-float:nth-child(2) { transform: rotate(1deg); margin-top: 2rem; }
+        .neo-card-float:nth-child(3) { transform: rotate(-1deg); }
+        .neo-card-float:hover { transform: rotate(0deg) translateY(-10px); box-shadow: 12px 12px 0 0 #000; }
+        .sticker { position: absolute; top: -10px; right: -10px; background: #FFD700; color: #000; border: 2px solid #000; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; transform: rotate(15deg); box-shadow: 3px 3px 0 0 #000; z-index: 2; }
+        .card-icon-v2 { font-size: 3rem; color: var(--primary); margin-bottom: 1.5rem; display: block; }
+        .team-section-v2 { text-align: center; margin-bottom: 5rem; padding: 3rem; background: #fff; border: 3px solid #000; border-radius: 30px; box-shadow: 10px 10px 0 0 #000; }
+        .team-grid-v2 { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 3rem; }
+        .team-card-v2 { background: #fff; border: 3px solid #000; padding: 1.5rem; border-radius: 20px; box-shadow: 6px 6px 0 0 #000; width: 250px; transition: var(--transition); }
+        .team-card-v2:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 6px 6px 0 0 var(--primary); }
+        .team-avatar-v2 { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #000; margin: 0 auto 1.5rem; overflow: hidden; transition: var(--transition); }
+        .team-card-v2:hover .team-avatar-v2 { border-color: var(--primary); transform: scale(1.1) rotate(5deg); }
+        .team-avatar-v2 img { width: 100%; height: 100%; object-fit: cover; }
+        .feedback-section-v2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+        .chat-bubble-left { background: #fff; border: 3px solid #000; border-radius: 20px 20px 20px 0; padding: 2.5rem; box-shadow: 6px 6px 0 0 #000; }
+        .chat-bubble-right { background: var(--secondary); border: 3px solid #000; border-radius: 20px 20px 0 20px; padding: 2.5rem; box-shadow: 6px 6px 0 0 #000; position: relative; }
+        .chat-bubble-right::before { content: "💬"; position: absolute; top: -20px; left: -20px; background: #fff; border: 3px solid #000; padding: 10px; border-radius: 50%; font-size: 1.5rem; box-shadow: 4px 4px 0 0 #000; }
+
+        /* HERO STYLES */
+        .hero-badge{ display:inline-block; background:#fff; color:#ff4fa3; padding:8px 16px; border-radius:999px; border:3px solid #000; font-weight:800; margin-bottom:1rem; box-shadow:4px 4px 0 #000; }
+        .hero-description{ max-width:700px; margin:1rem auto 2rem; font-size:1.1rem; line-height:1.8; font-weight:500; }
+        .home-search-container{ max-width:650px; margin:0 auto; width:100%; }
+        .home-search-wrapper{ display:flex; gap:12px; background:#fff; padding:12px; border:3px solid #000; border-radius:20px; box-shadow:6px 6px 0 #000; }
+        .home-search-wrapper input{ flex:1; border:none; outline:none; font-size:1rem; padding:12px; background:transparent; font-weight:600; }
+        .hero-search-btn{ white-space:nowrap; }
+        .hero-actions{ margin-top:2rem; display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+        .section-header{ text-align:center; margin-top:4rem; }
+        .section-subtitle{ color:#666; font-weight:500; margin-top:-10px; margin-bottom:2rem; }
+
+        /* ADMIN FEEDBACK REPLIES STYLES */
+        .admin-feedback-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .admin-feedback-card { background: #fff; border: 2px solid #000; border-radius: var(--radius-neo); padding: 1.5rem; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); transition: var(--transition); }
+        .admin-feedback-card:hover { box-shadow: 6px 6px 0 rgba(0,0,0,0.15); transform: translateX(5px); }
+        .fb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 2px dashed #eee; }
+        .fb-user-name { font-weight: 800; color: var(--primary); }
+        .fb-date { font-size: 0.8rem; color: #888; font-weight: 600; }
+        .fb-content { font-weight: 500; margin-bottom: 1rem; line-height: 1.5; font-style: italic; }
+        .admin-replies-area { background: #f0f0f0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border: 2px dashed #ccc; }
+        .reply-item { margin-bottom: 0.8rem; padding: 0.8rem; background: #fff; border: 2px solid var(--primary); border-radius: 8px; box-shadow: 2px 2px 0 rgba(0,0,0,0.05); }
+        .reply-meta { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem; font-weight: 700; }
+        .reply-text { font-size: 0.9rem; }
+        .reply-form-wrapper { display: flex; gap: 10px; align-items: flex-start; }
+        .reply-input { flex: 1; padding: 0.8rem; border: 2px solid #000 !important; font-size: 0.9rem !important; box-shadow: 3px 3px 0 rgba(0,0,0,0.1) !important; }
+
+        /* BOOK REVIEW REPLIES (NEW) */
+        .review-item { background: #fff; border: 3px solid #000; padding: 1.5rem; margin-bottom: 1.5rem; border-radius: var(--radius-neo); box-shadow: 4px 4px 0 0 #000; position: relative; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; border-bottom: 2px dashed #eee; padding-bottom: 0.5rem; }
+        .review-user { font-weight: 800; font-size: 1.1rem; color: var(--primary); }
+        .review-rating { color: #FFD700; font-size: 1.2rem; }
+        .review-text { font-style: italic; line-height: 1.6; margin-bottom: 1rem; font-size: 1rem; }
+        
+        .review-replies-container { margin-top: 1rem; padding-left: 1.5rem; border-left: 3px solid var(--secondary); }
+        .review-reply-bubble {
+            background: #f9f0f4; border: 2px solid var(--primary);
+            padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem;
+            box-shadow: 2px 2px 0 0 rgba(0,0,0,0.1);
+        }
+        .reply-admin-label { color: var(--primary); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.2rem; display: block; }
+        
+        .review-reply-form { display: flex; gap: 10px; margin-top: 1rem; }
+        .review-reply-form input { padding: 0.6rem; font-size: 0.9rem; box-shadow: 2px 2px 0 0 #000; }
+        
+        /* Responsive */
+        @media(max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); box-shadow: none; }
+            .sidebar.active { transform: translateX(0); box-shadow: 10px 0 0 0 #000; }
+            .main-wrapper { margin-left: 0; width: 100%; }
+            .mobile-toggle { display: block; }
+            .feedback-section-v2 { grid-template-columns: 1fr; }
+            .detail-header { flex-direction: column; text-align: center; }
+            .chart-wrapper { padding-left: 3rem; }
+            .chart-bars-container { left: 3rem; }
+            .chart-grid-bg { left: 3rem; }
+            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 950; }
+            .sidebar-overlay.active { display: block; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        @media(max-width:768px){
+            .hero-content h1{ font-size:2.3rem; line-height:1.2; }
+            .hero-description{ font-size:1rem; padding:0 10px; }
+            .home-search-wrapper{ flex-direction:column; }
+            .hero-actions{ flex-direction:column; align-items:center; }
+            .hero-actions .btn{ width:100%; max-width:300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand" onclick="app.navigate('home')">
+            <div class="logo"><i class="fas fa-book-open"></i> Pustaka<span style="color:var(--primary)">Pink</span></div>
+        </div>
+        
+        <nav class="sidebar-menu" id="sidebar-menu">
+            <li class="nav-item" id="nav-home-item"><button onclick="app.navigate('home')" id="nav-home"><i class="fas fa-home"></i> Beranda</button></li>
+            <li class="nav-item" id="nav-catalog-item"><button onclick="app.navigate('catalog')" id="nav-catalog"><i class="fas fa-layer-group"></i> Katalog Buku</button></li>
+            
+            <li class="nav-item" id="nav-dashboard-item">
+                <button onclick="app.navigate('dashboard')" id="nav-dashboard" style="display:none;"><i class="fas fa-history"></i> Riwayat & Denda</button>
+            </li>
+            <li class="nav-item" id="nav-admin-item">
+                <button onclick="app.navigate('admin')" id="nav-admin" style="display:none;"><i class="fas fa-chart-pie"></i> Dashboard Admin</button>
+            </li>
+            <li class="nav-item" id="nav-about-item">
+                <button onclick="app.navigate('about')" id="nav-about"><i class="fas fa-heart"></i> Tentang</button>
+            </li>
+        </nav>
+        <div class="sidebar-footer">&copy; 2023 Pustaka Pink</div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            </div>
+            <div class="header-right">
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-sm" onclick="app.openModal('loginModal')">Masuk</button>
+                    <button class="btn btn-primary btn-sm" onclick="app.openModal('registerModal')">Daftar</button>
+                </div>
+                <div class="auth-buttons" id="user-info" style="display:none; align-items:center;">
+                    <div style="text-align: right; line-height: 1.2; margin-right: 12px;">
+                        <div id="username-display" style="font-weight:800; font-size: 0.9rem;"></div>
+                        <div id="role-display" style="font-size: 0.75rem; font-weight: 700; color:var(--primary);"></div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" style="width: 40px; height: 40px; padding:0; border-radius: 50%;" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div id="notification-container"></div>
+
+            <!-- HOME SECTION -->
+            <section id="home" class="page-section active">
+                <div class="hero-banner">
+                    <div class="hero-content">
+                        <span class="hero-badge">✨ Perpustakaan Digital Modern</span>
+                        <h1>Dunia Imajinasi <br> Penuh Warna & Cerita</h1>
+                        <p class="hero-description">Temukan buku favoritmu, pinjam secara online, berikan ulasan, dan nikmati pengalaman membaca yang lebih modern, praktis, dan menyenangkan.</p>
+                        <div class="home-search-container">
+                            <form class="home-search-wrapper" onsubmit="app.handleHomeSearch(event)">
+                                <input type="text" id="homeSearchInput" placeholder="Cari judul buku atau penulis..." autocomplete="off">
+                                <button type="submit" class="btn hero-search-btn"><i class="fas fa-search"></i> Cari</button>
+                            </form>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" onclick="app.navigate('catalog')"><i class="fas fa-book-open"></i> Jelajahi Buku</button>
+                            <button class="btn btn-secondary" onclick="app.openModal('registerModal')"><i class="fas fa-user-plus"></i> Gabung Sekarang</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-header">
+                    <h2 class="section-title">📚 Populer Minggu Ini</h2>
+                    <br></br>
+                    <p class="section-subtitle">Buku yang paling banyak dibaca dan dipinjam oleh pengguna minggu ini.</p>
+                </div>
+                <div class="book-grid" id="popular-books-container"></div>
+            </section>
+
+            <!-- CATALOG SECTION -->
+            <section id="catalog" class="page-section">
+                <div class="filters">
+                    <div class="filter-row">
+                        <div class="input-group" style="flex: 2; min-width: 200px;">
+                            <div style="position:relative;">
+                                <input type="text" id="searchInput" placeholder="Cari judul / penulis..." autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 150px;">
+                            <select id="categoryFilter" onchange="app.filterBooks()">
+                                <option value="all">Semua Kategori</option>
+                                <option value="Fiksi">Fiksi</option>
+                                <option value="Sains">Sains</option>
+                                <option value="Seni">Seni</option>
+                                <option value="Sejarah">Sejarah</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-row" style="align-items: flex-start;">
+                        <div class="filter-label" style="margin-top: 5px;">Genre:</div>
+                        <div class="tag-group" id="genreTagGroup">
+                            <input type="hidden" id="genreFilterHidden" value="all">
+                            <button type="button" class="tag-btn active" onclick="app.selectGenre('all', this)">Semua</button>
+                            <button type="button" class="tag-btn" onclick="app.selectGenre('Fiksi', this)">Fiksi</button>
+                            <button type="button" class="tag-btn" onclick="app.selectGenre('Romantis', this)">Romantis</button>
+                            <button type="button" class="tag-btn" onclick="app.selectGenre('Sejarah', this)">Sejarah</button>
+                            <button type="button" class="tag-btn" onclick="app.selectGenre('Dongeng', this)">Dongeng</button>
+                            <button type="button" class="tag-btn" onclick="app.selectGenre('Misteri', this)">Misteri</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="book-grid" id="catalog-container"></div>
+                <div id="catalog-empty-state" style="display:none; text-align:center; padding: 4rem 2rem; grid-column: 1/-1;">
+                    <i class="fas fa-ghost" style="font-size: 3rem; color:var(--primary); margin-bottom: 1rem;"></i>
+                    <h3 style="font-family:'Fredoka'; margin-bottom:0.5rem;">Wah, kosong nih!</h3>
+                    <p>Coba kata kunci lain ya.</p>
+                    <button class="btn btn-secondary" style="margin-top: 1.5rem;" onclick="app.resetFilters()">Reset Filter</button>
+                </div>
+            </section>
+
+            <!-- DETAIL SECTION -->
+            <section id="detail" class="page-section">
+                <button class="btn" onclick="app.navigate('catalog')" style="margin-bottom: 1.5rem;"><i class="fas fa-arrow-left"></i> Kembali</button>
+                <div id="detail-content-area"></div>
+                <div style="margin-top:3rem;">
+                    <h3 style="font-family:'Fredoka'; border-bottom:3px solid #000; display:inline-block; margin-bottom:1.5rem; color:var(--primary);">Ulasan</h3>
+                    <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:300px; background:#fff; border:3px solid #000; padding:1.5rem; border-radius:var(--radius-neo); box-shadow:5px 5px 0 0 #000;" id="review-form-wrapper">
+                            <!-- Perubahan: Teks Login hanya muncul jika BENAR-BENAR belum login -->
+                            <p id="review-login-msg" style="margin-bottom:1rem; font-weight:600;">Yuk <a href="#" onclick="app.openModal('loginModal')" style="color:var(--primary); text-decoration:underline;">Login</a> dulu buat ngasih ulasan!</p>
+                            
+                            <form id="reviewForm" onsubmit="app.submitReview(event)" style="display:none;">
+                                <div style="margin-bottom:1rem;">
+                                    <label style="font-weight:800; display:block; margin-bottom:0.5rem;">Rating</label>
+                                    <div style="display:flex; gap:5px; flex-direction:row-reverse; justify-content:flex-end;">
+                                        <input type="radio" name="rating" value="5" id="s5" style="display:none"><label for="s5" style="cursor:pointer; font-size:1.5rem; color:#ddd;">★</label>
+                                        <input type="radio" name="rating" value="4" id="s4" style="display:none"><label for="s4" style="cursor:pointer; font-size:1.5rem; color:#ddd;">★</label>
+                                        <input type="radio" name="rating" value="3" id="s3" style="display:none"><label for="s3" style="cursor:pointer; font-size:1.5rem; color:#ddd;">★</label>
+                                        <input type="radio" name="rating" value="2" id="s2" style="display:none"><label for="s2" style="cursor:pointer; font-size:1.5rem; color:#ddd;">★</label>
+                                        <input type="radio" name="rating" value="1" id="s1" style="display:none"><label for="s1" style="cursor:pointer; font-size:1.5rem; color:#ddd;">★</label>
+                                    </div>
+                                    <style>input:checked ~ label { color: var(--primary); text-shadow: 2px 2px 0 #000; transform: scale(1.1); } label:hover, label:hover ~ label { color: #ffd700; }</style>
+                                </div>
+                                <textarea id="reviewText" rows="4" placeholder="Apa kata kamu tentang buku ini?" required style="margin-bottom:1rem;"></textarea>
+                                <button type="submit" class="btn btn-primary" style="width:100%;">Kirim Ulasan</button>
+                            </form>
+                        </div>
+                        <div style="flex:2; min-width:300px;" id="reviews-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DASHBOARD / HISTORY SECTION -->
+            <section id="dashboard" class="page-section">
+                <div id="user-dashboard-view">
+                    <div class="panel">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:3px solid #000; padding-bottom:1rem;">
+                            <h2 style="font-family:'Fredoka';">Riwayat Peminjaman & Status Denda</h2>
+                            <div id="admin-only-reset" style="display:none;">
+                                <button class="btn btn-danger btn-sm" onclick="app.resetHistory()"><i class="fas fa-trash"></i> Reset</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead><tr><th>Judul</th><th>Tgl Pinjam</th><th>Tenggat (Due Date)</th><th>Status</th><th>Aksi</th></tr></thead>
+                                <tbody id="active-loans-body"></tbody>
+                            </table>
+                        </div>
+                        <div id="empty-history" style="display:none; text-align:center; padding: 4rem; font-weight:700; color:#777;">Belum ada pinjaman.</div>
+                    </div>
+                </div>
+                <div id="admin-dashboard-view" style="display:none;">
+                    <h2 style="font-family:'Fredoka'; font-size: 2.5rem; color: var(--primary); margin-bottom: 2rem;">Data Peminjaman & Denda Global</h2>
+                    <p style="margin-bottom: 1.5rem; font-weight: 600; color: #666;">Memantau seluruh aktivitas peminjaman dan status denda user.</p>
+                    <div class="panel">
+                        <h3 style="font-family:'Fredoka'; margin-bottom:1.5rem; color:var(--text-main);">📑 Riwayat Transaksi Peminjaman</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead><tr><th>Nama User</th><th>Judul Buku</th><th>Tgl Pinjam</th><th>Tenggat</th><th>Tgl Kembali</th><th>Status Buku</th><th>Denda</th><th>Status Bayar</th></tr></thead>
+                                <tbody id="global-history-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN SECTION -->
+            <section id="admin" class="page-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                    <h2 style="font-family:'Fredoka'; font-size: 2.5rem; color: var(--primary);">Dashboard Admin</h2>
+                    <button class="btn btn-primary" onclick="app.openAddModal()"><i class="fas fa-plus"></i> Tambah Buku</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <div class="stat-icon"><i class="fas fa-book"></i></div>
+                        <div class="stat-info"><h4>Total Buku</h4><div class="stat-number" id="stat-total-books">0</div></div>
+                    </div>
+                    <div class="stat-card purple">
+                        <div class="stat-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                        <div class="stat-info"><h4>Sedang Dipinjam</h4><div class="stat-number" id="stat-borrowed-books">0</div></div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info"><h4>User Membaca</h4><div class="stat-number" id="stat-active-users">0</div></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3 style="font-family:'Fredoka'; margin-bottom:0.5rem; font-size: 1.5rem;">📊 Grafik Buku Terpopuler</h3>
+                    <p style="margin-bottom: 2rem; font-weight: 600; color: #666;">Visualisasi data berdasarkan total peminjaman.</p>
+                    <div class="chart-wrapper"><div class="chart-grid-bg" id="chartGrid"></div><div class="chart-bars-container" id="chartBars"></div></div>
+                </div>
+                <div class="panel">
+                    <h3 style="font-family:'Fredoka'; margin-bottom:1.5rem; color:var(--text-main);">Manajemen Database Buku</h3>
+                    <div class="table-responsive">
+                        <table class="data-table"><thead><tr><th>Cover</th><th>Judul</th><th>Penulis</th><th>Kategori</th><th>Genre</th><th>Stok</th><th>Rating</th><th>Aksi</th></tr></thead><tbody id="admin-book-list"></tbody></table>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3 style="font-family:'Fredoka'; margin-bottom:1.5rem; color:var(--text-main);">💬 Pesan Masuk & Balasan User</h3>
+                    <p style="margin-bottom: 1.5rem; font-weight: 600; color: #666;">Balas pesan dari user di sini. Tidak perlu login ulang.</p>
+                    <div id="admin-feedback-container" class="admin-feedback-list"></div>
+                </div>
+            </section>
+
+            <!-- ABOUT SECTION -->
+            <section id="about" class="page-section">
+                <div class="marquee-wrapper"><div class="marquee-content">PUSTAKA PINK &nbsp; • &nbsp; LITERASI DIGITAL &nbsp; • &nbsp; STOK REAL-TIME &nbsp; • &nbsp; DENDA OTOMATIS &nbsp; &nbsp; PENGEMBALIKAN MUDAH &nbsp; • &nbsp; PUSTAKA PINK &nbsp; • &nbsp; LITERASI DIGITAL &nbsp; • &nbsp; STOK REAL-TIME &nbsp; • &nbsp; DENDA OTOMATIS &nbsp; • &nbsp; PENGEMBALIKAN MUDAH &nbsp;</div></div>
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <h2 style="font-family:'Fredoka'; font-size: 2.5rem; color:var(--primary); margin-bottom:1rem;">Pustaka Pink: Perpustakaan Digital Masa Depan</h2>
+                    <p style="max-width: 600px; margin: 0 auto; color: #555; font-size: 1.1rem;">Kami hadir dengan visi mengubah cara Anda membaca dan meminjam buku. Sistem kami dirancang untuk memberikan pengalaman yang transparan, cepat, dan tentu saja, menyenangkan.</p>
+                </div>
+                <div class="about-grid-v2">
+                    <div class="neo-card-float"><div class="sticker"><i class="fas fa-bolt"></i></div><i class="fas fa-microchip card-icon-v2"></i><h3 style="font-family:'Fredoka'; font-size: 1.5rem; margin-bottom:0.5rem;">Sistem Cerdas</h3><p style="color:#666; line-height:1.6;">Teknologi stok real-time memastikan Anda selalu mengetahui ketersediaan buku secara akurat.</p></div>
+                    <div class="neo-card-float"><div class="sticker"><i class="fas fa-file-invoice-dollar"></i></div><i class="fas fa-shield-alt card-icon-v2"></i><h3 style="font-family:'Fredoka'; font-size: 1.5rem; margin-bottom:0.5rem;">Transparansi Total</h3><p style="color:#666; line-height:1.6;">Pembayaran denda otomatis yang tercatat langsung dalam riwayat peminjaman Anda.</p></div>
+                    <div class="neo-card-float"><div class="sticker"><i class="fas fa-clock"></i></div><i class="fas fa-stopwatch card-icon-v2"></i><h3 style="font-family:'Fredoka'; font-size: 1.5rem; margin-bottom:0.5rem;">Tepat Waktu</h3><p style="color:#666; line-height:1.6;">Sistem pengingat otomatis agar Anda tidak lupa mengembalikan buku tepat waktu.</p></div>
+                </div>
+                <div class="team-section-v2">
+                    <h2 style="font-family:'Fredoka'; font-size: 2.5rem; color: var(--primary);"></h2>
+                    <p style="color:#666; margin-top:0.5rem;">Dibuat dengan dedikasi untuk kemajuan literasi digital.</p>
+                    <div class="team-grid-v2">
+                        <div class="team-card-v2">
+                            <div class="team-avatar-v2"><img src="img/WhatsApp Image 2026-05-20 at 16.25.33.jpeg" alt="Creator" onerror="this.src='https://via.placeholder.com/150?text=Admin'"></div>
+                            <h3 style="font-family:'Fredoka'; font-size:1.2rem; color:#000;">Rani Yuniar Cantik</h3>
+                            <p style="color:var(--primary); font-weight:700;">Pembuat Website </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="feedback-section-v2">
+                    <div class="chat-bubble-left">
+                        <h3 style="font-family:'Fredoka'; font-size: 1.8rem; margin-bottom:1rem; color:var(--primary);">Kontak Kami</h3>
+                        <p style="margin-bottom:1.5rem; line-height:1.6;">Punya saran atau menemukan bug dalam sistem? Kirim pesan langsung ke tim kami.</p>
+                        <ul style="list-style:none; line-height:2;"><li><i class="fas fa-map-marker-alt" style="width:25px; color:var(--primary);"></i> Jl. Letjen Ibrahim Adjie No.178, Sindangbarang, Kec. Bogor Barat, Kota Bogor</li><li><i class="fas fa-envelope" style="width:25px; color:var(--primary);"></i> raniyu2022@gmail.com</li></ul>
+                    </div>
+                    <div class="chat-bubble-right">
+                        <h3 style="font-family:'Fredoka'; margin-bottom:1rem;">Kirim Pesan 💌</h3>
+                        <p style="font-size:0.8rem; margin-bottom:1rem; color:#666;">Pesan akan dikirim langsung ke email admin.</p>
+                        <form id="feedbackForm" onsubmit="app.handleContactSubmit(event)">
+                            <div style="margin-bottom: 1rem;"><input type="text" name="from_name" placeholder="Nama Kamu" required style="background: rgba(255,255,255,0.8);"></div>
+                            <div style="margin-bottom: 1rem;"><input type="email" name="reply_to" placeholder="Email Kamu" required style="background: rgba(255,255,255,0.8);"></div>
+                            <div style="margin-bottom: 1rem;"><textarea name="message" rows="4" placeholder="Apa yang ingin kamu sampaikan?" required style="background: rgba(255,255,255,0.8);"></textarea></div>
+                            <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-paper-plane"></i> Kirim ke Email</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <div id="loginModal" class="modal"><div class="modal-content"><button class="close-btn" onclick="app.closeModal('loginModal')">X</button><h2 style="font-family:'Fredoka'; text-align:center; margin-bottom:1.5rem; text-transform:uppercase; color:var(--primary);">Login</h2><form onsubmit="app.handleLogin(event)"><div style="margin-bottom:1rem;"><input type="text" id="loginUsername" placeholder="Username" required></div><div style="margin-bottom:1rem;"><input type="password" id="loginPassword" placeholder="Password" required></div><button type="submit" class="btn btn-primary" style="width:100%;">MASUK</button></form></div></div>
+    <div id="registerModal" class="modal"><div class="modal-content"><button class="close-btn" onclick="app.closeModal('registerModal')">X</button><h2 style="font-family:'Fredoka'; margin-bottom:1.5rem; text-transform:uppercase; color:var(--primary);">Daftar</h2><form onsubmit="app.handleRegister(event)"><input type="text" id="regFullname" placeholder="Nama Lengkap" required style="margin-bottom:1rem;"><input type="text" id="regUsername" placeholder="Username" required style="margin-bottom:1rem;"><input type="password" id="regPassword" placeholder="Password" required style="margin-bottom:1rem;"><button type="submit" class="btn btn-secondary" style="width:100%;">BUAT AKUN</button></form></div></div>
+    
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeModal('addModal')">X</button>
+            <h2 style="font-family:'Fredoka'; margin-bottom:1.5rem; color:var(--primary);">Tambah Buku Baru</h2>
+            <form onsubmit="app.handleAddBook(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Judul Buku</label><input type="text" id="addTitle" placeholder="Contoh: Laskar Pelangi" required></div>
+                    <div class="form-group"><label>Penulis</label><input type="text" id="addAuthor" placeholder="Nama Penulis" required></div>
+                    <div class="form-group"><label>Tahun Terbit</label><input type="number" id="addYear" placeholder="2023" required></div>
+                    <div class="form-group"><label>Stok Awal</label><input type="number" id="addStock" placeholder="Jumlah Buku" min="0" required></div>
+                    <div class="form-group"><label>Kategori</label><select id="addCategory"><option value="Fiksi">Fiksi</option><option value="Sains">Sains</option><option value="Seni">Seni</option><option value="Sejarah">Sejarah</option></select></div>
+                    <div class="form-group"><label>Genre</label><select id="addGenre"><option value="Fiksi">Fiksi</option><option value="Romantis">Romantis</option><option value="Sejarah">Sejarah</option><option value="Dongeng">Dongeng</option><option value="Misteri">Misteri</option></select></div>
+                    <div class="form-group form-full"><label>Sinopsis Singkat</label><input type="text" id="addSynopsis" placeholder="Ringkasan 1 kalimat..." required></div>
+                    <div class="form-group form-full"><label>Deskripsi Lengkap</label><textarea id="addDescription" rows="3" placeholder="Jelaskan isi buku secara lengkap..." required></textarea></div>
+                    <div class="form-group form-full" style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;"><input type="checkbox" id="addPopular" style="width:auto; margin:0;"><label style="margin:0; cursor:pointer;">Tandai sebagai Buku Populer</label></div>
+                    <div class="form-group form-full"><label>Cover Buku</label><div class="file-upload-zone" id="addUploadZone"><input type="file" id="addCoverFile" accept="image/*" required onchange="app.handleImageUpload(this, 'addPreview')"><i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:var(--primary); margin-bottom:0.5rem;"></i><p style="font-weight:700;">Klik untuk Upload Cover</p><p style="font-size:0.8rem; color:#666;">Format: JPG, PNG</p></div><img id="addPreview" style="width:100%; border:3px solid #000; display:none; margin-top:1rem; border-radius:var(--radius-neo);"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top:1rem;">SIMPAN BUKU</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeModal('editModal')">X</button>
+            <h2 style="font-family:'Fredoka'; margin-bottom:1.5rem; color:var(--primary);">Edit Data Buku</h2>
+            <form onsubmit="app.handleEditSubmit(event)">
+                <input type="hidden" id="editBookId">
+                <div class="form-grid">
+                    <div class="form-group"><label>Judul Buku</label><input type="text" id="editTitle" required></div>
+                    <div class="form-group"><label>Penulis</label><input type="text" id="editAuthor" required></div>
+                    <div class="form-group"><label>Tahun Terbit</label><input type="number" id="editYear" required></div>
+                    <div class="form-group"><label>Stok</label><input type="number" id="editStock" min="0" required></div>
+                    <div class="form-group"><label>Kategori</label><select id="editCategory"><option value="Fiksi">Fiksi</option><option value="Sains">Sains</option><option value="Seni">Seni</option><option value="Sejarah">Sejarah</option></select></div>
+                    <div class="form-group"><label>Genre</label><select id="editGenre"><option value="Fiksi">Fiksi</option><option value="Romantis">Romantis</option><option value="Sejarah">Sejarah</option><option value="Dongeng">Dongeng</option><option value="Misteri">Misteri</option></select></div>
+                    <div class="form-group form-full"><label>Sinopsis Singkat</label><input type="text" id="editSynopsis" required></div>
+                    <div class="form-group form-full"><label>Deskripsi Lengkap</label><textarea id="editDescription" rows="3" required></textarea></div>
+                    <div class="form-group form-full" style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;"><input type="checkbox" id="editPopular" style="width:auto; margin:0;"><label style="margin:0; cursor:pointer;">Tandai sebagai Buku Populer</label></div>
+                    <div class="form-group form-full"><label>Cover Buku</label><div class="file-upload-zone" id="editUploadZone"><input type="file" id="editCoverFile" accept="image/*" onchange="app.handleImageUpload(this, 'editPreview')"><i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:var(--primary); margin-bottom:0.5rem;"></i><p style="font-weight:700;">Klik untuk Ganti Cover (Opsional)</p><p style="font-size:0.8rem; color:#666;">Biarkan kosong jika tidak ingin mengubah</p></div><img id="editPreview" style="width:100%; border:3px solid #000; display:none; margin-top:1rem; border-radius:var(--radius-neo);"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top:1rem;">UPDATE DATA</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="borrowModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeModal('borrowModal')">X</button>
+            <h2 style="font-family:'Fredoka'; text-align:center; margin-bottom:1.5rem; color:var(--primary);">Formulir Peminjaman</h2>
+            <form onsubmit="app.handleBorrowSubmit(event)">
+                <input type="hidden" id="borrowBookId">
+                <div style="margin-bottom:1rem;"><label>Tanggal Pinjam</label><input type="date" id="tglPinjam" required></div>
+                <div style="margin-bottom:1.5rem;"><label>Tanggal Kembali</label><input type="date" id="tglKembali" required><p style="font-size:0.8rem; color:#D32F2F; margin-top:5px;">*Maksimal peminjaman 7 hari. Denda keterlambatan Rp 5.000/hari.</p></div>
+                <button type="submit" class="btn btn-primary btn-block">Konfirmasi Pinjam</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="returnModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeModal('returnModal')">X</button>
+            <h2 style="font-family:'Fredoka'; text-align:center; margin-bottom:0.5rem; color:var(--primary);">Pengembalian Buku</h2>
+            <div id="returnBookTitle" style="text-align:center; margin-bottom:1rem; font-weight:800;"></div>
+            <div style="background:#f9f9f9; padding:1rem; border:2px solid #000; border-radius:8px; margin-bottom:1.5rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>Tenggat (Due Date):</span> <strong id="retDueDate" style="color:var(--primary);"></strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>Hari Ini:</span> <strong id="retTodayDate"></strong></div>
+            </div>
+            <div id="fineSection" style="display:none;">
+                <div class="fine-alert"><i class="fas fa-exclamation-triangle"></i> TERLAMBAT!<br>Anda dikenakan denda: <strong id="fineAmountDisplay">Rp 0</strong></div>
+                <button id="btnPayFine" class="btn btn-danger btn-block" onclick="app.openPaymentModal()"><i class="fas fa-wallet"></i> BAYAR DENDA (E-Wallet)</button>
+                <p id="paidStatus" style="display:none; text-align:center; color:green; font-weight:800; margin-top:0.5rem;"><i class="fas fa-check-circle"></i> Denda Sudah Dibayar</p>
+            </div>
+            <button id="btnConfirmReturn" class="btn btn-secondary btn-block" style="margin-top:1rem;" onclick="app.executeReturn()">KEMBALIKAN BUKU</button>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeModal('paymentModal')">X</button>
+            <div id="paymentFormSection">
+                <h2 style="font-family:'Fredoka'; text-align:center; margin-bottom:0.5rem; color:var(--primary);">Pembayaran Denda</h2>
+                <div style="text-align:center; margin-bottom:2rem;">
+                    <p style="color:#666;">Total Pembayaran</p>
+                    <h1 id="payAmount" style="color:var(--text-main); font-family:'Fredoka';">Rp 0</h1>
+                    <div style="width: 60px; height: 4px; background: #eee; margin: 10px auto;"></div>
+                </div>
+                <div class="ewallet-grid">
+                    <div class="ewallet-option" onclick="app.selectWallet(this, 'GoPay')"><i class="fas fa-wallet ewallet-icon gopay-color"></i><span>GoPay</span></div>
+                    <div class="ewallet-option" onclick="app.selectWallet(this, 'OVO')"><i class="fas fa-wallet ewallet-icon ovo-color"></i><span>OVO</span></div>
+                    <div class="ewallet-option" onclick="app.selectWallet(this, 'Dana')"><i class="fas fa-wallet ewallet-icon dana-color"></i><span>Dana</span></div>
+                    <div class="ewallet-option" onclick="app.selectWallet(this, 'ShopeePay')"><i class="fas fa-wallet ewallet-icon shopee-color"></i><span>ShopeePay</span></div>
+                </div>
+                <div style="margin-bottom:1.5rem;"><label>Nomor HP Terdaftar</label><input type="tel" id="payPhoneNumber" placeholder="08xxxxxxxxxx" required></div>
+                <button id="btnProcessPay" class="btn btn-primary btn-block" onclick="app.processPayment()">BAYAR SEKARANG</button>
+            </div>
+            <div id="paymentQRSection" class="qr-payment-wrapper">
+                <div class="qr-header">Scan QR Code untuk Membayar</div>
+                <div class="qr-timer" id="qrTimer">05:00</div>
+                <div class="qr-frame"><img id="qrImage" src="" alt="QR Code"><div class="scanner-line"></div></div>
+                <p style="font-size:0.9rem; color:#666; margin-bottom:1rem;">Gunakan aplikasi <strong><span id="qrWalletName">GoPay</span></strong> untuk scan.</p>
+                <button class="btn btn-sm btn-secondary" onclick="app.cancelPayment()">Batal</button>
+            </div>
+            <div id="paymentSuccessSection" class="success-animation">
+                <div class="success-circle"><i class="fas fa-check"></i></div>
+                <h3 style="color:#4CAF50; font-family:'Fredoka'; margin-bottom:0.5rem;">Pembayaran Berhasil!</h3>
+                <p>Denda telah lunas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const EMAILJS_CONFIG = { publicKey: "mhliQnsGKWWHA_HNE", serviceId: "service_ahjkfpt", templateId: "template_vx0a8fa" };
+        (function(){ try { emailjs.init(EMAILJS_CONFIG.publicKey); } catch(e) { console.warn("EmailJS init failed.", e); } })();
+
+        const initialBooks = [
+            { id: 1, title: "Laskar Pelangi", author: "Andrea Hirata", year: 2005, category: "Fiksi", genre: "Fiksi", stock: 3, cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600", synopsis: "Perjuangan anak-anak Belitong meraih pendidikan.", description: "Kisah inspiratif tentang sepuluh anak kampung di Belitong.", isPopular: true, reviews: [] },
+            { id: 2, title: "Bumi Manusia", author: "Pramoedya A. Toer", year: 1980, category: "Sejarah", genre: "Sejarah", stock: 0, cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=600", synopsis: "Roman sejarah pergerakan nasional Indonesia.", description: "Novel epik yang mengisahkan perjalanan hidup Minke.", isPopular: true, reviews: [] },
+            { id: 3, title: "Sains Menyenangkan", author: "Robert C. Martin", year: 2008, category: "Sains", genre: "Fiksi", stock: 2, cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&q=80&w=600", synopsis: "Panduan praktis menulis kode bersih.", description: "Buku ini mengajarkan prinsip-prinsip 'Clean Code'.", isPopular: false, reviews: [] },
+            { id: 4, title: "Sapiens", author: "Yuval Noah Harari", year: 2011, category: "Sains", genre: "Sejarah", stock: 5, cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600", synopsis: "Sejarah singkat umat manusia dari zaman purba.", description: "Sebuah eksplorasi menakjubkan tentang Homo Sapiens.", isPopular: true, reviews: [] },
+            { id: 5, title: "Filosofi Teras", author: "Henry Manampiring", year: 2019, category: "Seni", genre: "Dongeng", stock: 4, cover: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=600", synopsis: "Filosofi Stoa untuk kehidupan modern.", description: "Menerapkan ajaran filsuf Stoa kuno.", isPopular: false, reviews: [] },
+            { id: 6, title: "Atomic Habits", author: "James Clear", year: 2018, category: "Seni", genre: "Romantis", stock: 10, cover: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600", synopsis: "Cara membentuk kebiasaan baik.", description: "Strategi praktis untuk membangun kebiasaan kecil.", isPopular: true, reviews: [] },
+            { id: 7, title: "Harry Potter", author: "J.K. Rowling", year: 1997, category: "Fiksi", genre: "Dongeng", stock: 5, cover: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=600", synopsis: "Kisah penyihir muda di Hogwarts.", description: "Mengikuti petualangan Harry Potter.", isPopular: true, reviews: [] },
+            { id: 8, title: "Sherlock Holmes", author: "Arthur Conan Doyle", year: 1892, category: "Fiksi", genre: "Misteri", stock: 2, cover: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&q=80&w=600", synopsis: "Detektif konsultan legendaris.", description: "Kumpulan kasus misteri.", isPopular: false, reviews: [] }
+        ];
+
+        const defaultUsers = [ { username: "admin", password: "admin", fullname: "Administrator", role: "admin", history: [] }, { username: "user", password: "123", fullname: "User Demo", role: "user", history: [] } ];
+
+        const app = {
+            data: { books: [], users: [], currentUser: null, tempImageBase64: null, activeBookId: null, activeLoanIndex: null, chartFilterPeriod: 'all', filterTimeout: null, feedbacks: [], tempFine: 0, selectedWallet: null, paymentTimerInterval: null },
+
+            init: function() {
+                try {
+                    this.data.books = JSON.parse(localStorage.getItem('pink_books')) || initialBooks;
+                    this.data.users = JSON.parse(localStorage.getItem('pink_users')) || defaultUsers;
+                    this.data.feedbacks = JSON.parse(localStorage.getItem('pink_feedbacks')) || []; 
+                } catch(e) { 
+                    console.error("Data Load Error, resetting defaults", e);
+                    this.data.books = initialBooks; this.data.users = defaultUsers; this.data.feedbacks = [];
+                }
+
+                // MIGRASI KEAMANAN: Memastikan struktur ulasan dan balasan valid
+                if (this.data.feedbacks && this.data.feedbacks.length > 0) {
+                    this.data.feedbacks.forEach(fb => { if (!fb.replies) fb.replies = []; });
+                }
+
+                this.data.books.forEach(b => { 
+                    if (typeof b.isPopular === 'undefined') b.isPopular = false; 
+                    if (typeof b.synopsis === 'undefined') b.synopsis = b.description || ""; 
+                    if (typeof b.description === 'undefined') b.description = b.synopsis || ""; 
+                    if (typeof b.genre === 'undefined') b.genre = "Fiksi";
+                    
+                    // MIGRASI ULASAN: Pastikan setiap review punya array replies
+                    if(b.reviews && b.reviews.length > 0) {
+                        b.reviews.forEach(r => {
+                            if(!r.replies) r.replies = [];
+                        });
+                    }
+                });
+
+                const session = localStorage.getItem('pink_session');
+                if(session) this.data.currentUser = this.data.users.find(u => u.username === session);
+                
+                this.renderPopularBooks();
+                this.renderCatalog();
+                this.updateUIForUser();
+                this.renderFeedbacks(); 
+            },
+
+            saveData: function() {
+                try { 
+                    localStorage.setItem('pink_books', JSON.stringify(this.data.books)); 
+                    localStorage.setItem('pink_users', JSON.stringify(this.data.users));
+                    localStorage.setItem('pink_feedbacks', JSON.stringify(this.data.feedbacks)); 
+                } catch(e) { 
+                    console.error("Storage limit reached", e);
+                    this.notify("Storage penuh! Hapus beberapa data.", "error"); 
+                }
+            },
+
+            handleHomeSearch: function(e) {
+                e.preventDefault();
+                const query = document.getElementById('homeSearchInput').value;
+                this.navigate('catalog');
+                setTimeout(() => {
+                    document.getElementById('searchInput').value = query;
+                    this.filterBooks();
+                }, 100);
+            },
+
+            navigate: function(pageId) {
+                if (pageId === 'admin') {
+                    if (!this.data.currentUser || this.data.currentUser.role !== 'admin') {
+                        this.notify("Akses Ditolak! Khusus Admin.", "error");
+                        return;
+                    }
+                }
+                if (pageId === 'dashboard' && !this.data.currentUser) return this.openModal('loginModal');
+                
+                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                document.querySelectorAll('.nav-item button').forEach(b => b.classList.remove('active'));
+                const nav = document.getElementById('nav-' + pageId);
+                if(nav) nav.classList.add('active');
+                window.scrollTo(0, 0);
+
+                if(window.innerWidth <= 1024) { 
+                    document.getElementById('sidebar').classList.remove('active'); 
+                    document.querySelector('.sidebar-overlay').classList.remove('active'); 
+                }
+
+                if(pageId === 'admin') { this.renderAdminPanel(); }
+                if(pageId === 'dashboard') this.renderDashboard();
+            },
+
+            filterBooks: function() {
+                const container = document.getElementById('catalog-container');
+                clearTimeout(this.filterTimeout);
+                container.innerHTML = Array(4).fill('<div class="book-card skeleton" style="height:400px;"></div>').join('');
+                
+                this.filterTimeout = setTimeout(() => {
+                    const s = document.getElementById('searchInput').value.toLowerCase();
+                    const cat = document.getElementById('categoryFilter').value;
+                    const gen = document.getElementById('genreFilterHidden').value;
+                    let res = this.data.books.filter(b => {
+                        const matchText = (b.title.toLowerCase().includes(s) || b.author.toLowerCase().includes(s));
+                        const matchCat = (cat === 'all' || b.category === cat);
+                        const matchGen = (gen === 'all' || b.genre === gen);
+                        return matchText && matchCat && matchGen;
+                    });
+                    this.renderCatalog(res);
+                }, 300);
+            },
+            
+            selectGenre: function(genre, btnElement) {
+                document.getElementById('genreFilterHidden').value = genre;
+                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+                this.filterBooks();
+            },
+
+            resetFilters: function() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('categoryFilter').value = 'all';
+                document.getElementById('genreFilterHidden').value = 'all';
+                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('.tag-btn').classList.add('active');
+                this.filterBooks();
+            },
+
+            updateUIForUser: function() {
+                const u = this.data.currentUser;
+                const btns = document.getElementById('auth-buttons');
+                const info = document.getElementById('user-info');
+                const navDashboard = document.getElementById('nav-dashboard'); 
+                const navAdmin = document.getElementById('nav-admin'); 
+                const navDashboardItem = document.getElementById('nav-dashboard-item'); 
+                const navAdminItem = document.getElementById('nav-admin-item'); 
+                const navAboutItem = document.getElementById('nav-about-item');
+                const navCatalogItem = document.getElementById('nav-catalog').parentElement;
+
+                const resetBtnContainer = document.getElementById('admin-only-reset');
+                if (u && u.role === 'admin') resetBtnContainer.style.display = 'block';
+                else resetBtnContainer.style.display = 'none';
+
+                if (u) {
+                    btns.style.display = 'none'; info.style.display = 'flex';
+                    document.getElementById('username-display').textContent = u.fullname;
+                    document.getElementById('role-display').textContent = u.role === 'admin' ? 'ADMINISTRATOR' : 'MEMBER';
+                    navDashboard.style.display = 'block';
+                    navDashboard.innerHTML = u.role === 'admin' 
+                        ? '<i class="fas fa-history"></i> Riwayat Global & Denda' 
+                        : '<i class="fas fa-history"></i> Riwayat & Denda';
+
+                    if (u.role === 'admin') {
+                        navAdmin.style.display = 'block';
+                        this.insertAfter(navDashboardItem, navCatalogItem);
+                        this.insertAfter(navAdminItem, navDashboardItem);
+                        this.insertAfter(navAboutItem, navAdminItem);
+                    } else {
+                        navAdmin.style.display = 'none'; 
+                        this.insertAfter(navDashboardItem, navCatalogItem);
+                        this.insertAfter(navAboutItem, navDashboardItem);
+                    }
+                } else {
+                    btns.style.display = 'flex'; info.style.display = 'none';
+                    navDashboard.style.display = 'none'; navAdmin.style.display = 'none';
+                    this.insertAfter(navAboutItem, navCatalogItem);
+                }
+            },
+
+            insertAfter: function(newNode, targetNode) {
+                if(targetNode && targetNode.parentNode) {
+                    if(targetNode.nextSibling) targetNode.parentNode.insertBefore(newNode, targetNode.nextSibling);
+                    else targetNode.parentNode.appendChild(newNode);
+                }
+            },
+
+            renderPopularBooks: function() {
+                const container = document.getElementById('popular-books-container');
+                let popular = this.data.books.filter(b => b.isPopular).slice(0, 4);
+                if(popular.length < 4) popular = [...popular, ...this.data.books.filter(b => !b.isPopular).slice(0, 4 - popular.length)];
+                container.innerHTML = popular.map(b => this.createBookCard(b)).join('');
+            },
+
+            renderCatalog: function(list = null) {
+                const container = document.getElementById('catalog-container');
+                const emptyState = document.getElementById('catalog-empty-state');
+                const books = list || this.data.books;
+                if (books.length === 0) { container.innerHTML = ''; emptyState.style.display = 'block'; }
+                else { emptyState.style.display = 'none'; container.innerHTML = books.map(b => this.createBookCard(b)).join(''); }
+            },
+
+            createBookCard: function(book) {
+                if(!book) return '';
+                const avg = this.getAvgRating(book);
+                const isSoldOut = book.stock <= 0;
+                let btnHtml = '', soldOutClass = '', stockBadgeHtml = '';
+
+                if (isSoldOut) {
+                    btnHtml = `<button class="btn btn-sm btn-block" disabled title="Stok Habis"><i class="fas fa-lock"></i> SOLD OUT</button>`;
+                    soldOutClass = 'sold-out';
+                    stockBadgeHtml = '<span class="stock-badge empty">STOK HABIS</span>';
+                } else {
+                    btnHtml = `<button class="btn btn-sm" onclick="app.openBookDetail(${book.id})">DETAIL</button>`;
+                    stockBadgeHtml = `<span class="stock-badge ok">Stok: ${book.stock}</span>`;
+                }
+                return `
+                <div class="book-card ${soldOutClass}">
+                    <div class="book-cover-wrapper ${soldOutClass}">
+                        <img src="${book.cover}" class="book-cover" onerror="this.src='https://via.placeholder.com/300?text=No+Cover'">
+                    </div>
+                    <div class="book-info">
+                        <span class="book-category">${book.category}</span>
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author}</div>
+                        <div style="margin:auto 0 1rem 0; font-weight:800; color:var(--primary);">★ ${avg.toFixed(1)}</div>
+                        <div style="margin-bottom:1rem;">${stockBadgeHtml}</div>
+                        ${btnHtml}
+                    </div>
+                </div>`; 
+            },
+
+            openBookDetail: function(id) {
+                this.data.activeBookId = id;
+                const book = this.data.books.find(b => b.id === id);
+                if(!book) return;
+                
+                const avg = this.getAvgRating(book);
+                let stars = '';
+                for(let i=1; i<=5; i++) stars += i <= Math.round(avg) ? '★' : '☆';
+                
+                let btnText = "", btnClass = "", btnAction = "", btnStyle = "";
+                const isBorrowed = this.data.currentUser && this.data.currentUser.history.some(h => h.bookId === id && h.status === 'Dipinjam');
+
+                if(isBorrowed) {
+                    btnText = "SEDANG DIPINJAM"; btnClass = "btn-secondary"; btnAction = "disabled"; btnStyle = "opacity:0.7; cursor:not-allowed;";
+                } else if(!this.data.currentUser) {
+                    btnText = "LOGIN UNTUK PINJAM"; btnClass = "btn"; btnAction = "onclick=\"app.openModal('loginModal')\"";
+                } else if(this.data.currentUser.role === 'admin') {
+                    btnText = "ADMIN READ ONLY"; btnClass = "btn"; btnAction = "disabled"; btnStyle = "opacity:0.7;";
+                } else if(book.stock <= 0) {
+                    btnText = "STOK HABIS"; btnClass = "btn"; btnAction = "disabled"; btnStyle = "opacity:0.7; cursor:not-allowed;";
+                } else {
+                    btnText = "PINJAM SEKARANG"; btnClass = "btn-primary"; btnAction = `onclick="app.openBorrowModal(${book.id})"`; 
+                }
+
+                const html = `
+                <div class="detail-header">
+                    <img src="${book.cover}" class="detail-cover" onerror="this.src='https://via.placeholder.com/300?text=No+Cover'">
+                    <div class="detail-meta">
+                        <span style="background:var(--secondary); padding:0.2rem 0.5rem; border:2px solid #000; font-weight:800; display:inline-block; margin-bottom:0.5rem;">${book.category} • ${book.genre}</span>
+                        <h1>${book.title}</h1>
+                        <div style="font-size:1.2rem; margin-bottom:1rem; font-weight:600;">${book.author} (${book.year})</div>
+                        <div class="rating-display">Rating: ${avg.toFixed(1)} / 5.0 (${stars})</div>
+                        <div style="background:var(--secondary); border:2px solid #000; padding:1rem; margin: 1.5rem 0; border-radius:8px;">
+                            <strong style="display:block; margin-bottom:0.5rem; color:var(--primary);">Sinopsis Singkat:</strong>
+                            <p style="margin:0; line-height:1.4;">${book.synopsis || "Tidak ada sinopsis."}</p>
+                        </div>
+                        <p style="margin: 1.5rem 0; line-height:1.6;"><strong>Deskripsi Lengkap:</strong><br>${book.description || "Tidak ada deskripsi."}</p>
+                        <button class="btn ${btnClass}" ${btnAction} style="${btnStyle}">${btnText}</button>
+                    </div>
+                </div>`;
+                
+                document.getElementById('detail-content-area').innerHTML = html;
+                this.renderReviewForm();
+                this.renderReviews(book);
+                this.navigate('detail');
+            },
+
+            openEditModal: function(id) {
+                const book = this.data.books.find(b => b.id === id);
+                if(!book) return;
+                document.getElementById('editBookId').value = book.id;
+                document.getElementById('editTitle').value = book.title;
+                document.getElementById('editAuthor').value = book.author;
+                document.getElementById('editYear').value = book.year;
+                document.getElementById('editStock').value = book.stock;
+                document.getElementById('editCategory').value = book.category;
+                document.getElementById('editGenre').value = book.genre;
+                document.getElementById('editSynopsis').value = book.synopsis || "";
+                document.getElementById('editDescription').value = book.description || "";
+                document.getElementById('editPopular').checked = book.isPopular || false;
+                const preview = document.getElementById('editPreview');
+                preview.src = book.cover;
+                preview.style.display = 'block';
+                this.data.tempImageBase64 = null;
+                this.openModal('editModal');
+            },
+
+            handleEditSubmit: function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('editBookId').value);
+                const book = this.data.books.find(b => b.id === id);
+                if(!book) return this.notify("Buku tidak ditemukan!", "error");
+
+                book.title = document.getElementById('editTitle').value;
+                book.author = document.getElementById('editAuthor').value;
+                book.year = parseInt(document.getElementById('editYear').value);
+                book.stock = parseInt(document.getElementById('editStock').value);
+                book.category = document.getElementById('editCategory').value;
+                book.genre = document.getElementById('editGenre').value;
+                book.synopsis = document.getElementById('editSynopsis').value;
+                book.description = document.getElementById('editDescription').value;
+                book.isPopular = document.getElementById('editPopular').checked;
+
+                if(this.data.tempImageBase64) book.cover = this.data.tempImageBase64;
+
+                this.saveData(); 
+                this.renderAdminPanel(); 
+                this.renderCatalog(); 
+                this.renderPopularBooks(); 
+                this.closeModal('editModal'); 
+                this.notify("Data Buku Berhasil Diupdate!", "success");
+            },
+
+            openBorrowModal: function(bookId) {
+                const book = this.data.books.find(b => b.id === bookId);
+                if(!book) return;
+                document.getElementById('borrowBookId').value = bookId;
+                const today = new Date().toISOString().split('T')[0];
+                const nextWeek = new Date(); nextWeek.setDate(nextWeek.getDate() + 7);
+                const maxDate = nextWeek.toISOString().split('T')[0];
+                const pinjamInput = document.getElementById('tglPinjam');
+                const kembaliInput = document.getElementById('tglKembali');
+                pinjamInput.value = today; pinjamInput.min = today; pinjamInput.max = today; 
+                kembaliInput.value = maxDate; kembaliInput.min = today; kembaliInput.max = maxDate; 
+                this.openModal('borrowModal');
+            },
+
+            handleBorrowSubmit: function(e) {
+                e.preventDefault();
+                const bookId = parseInt(document.getElementById('borrowBookId').value);
+                const tglPinjam = document.getElementById('tglPinjam').value;
+                const tglKembali = document.getElementById('tglKembali').value;
+                if(new Date(tglKembali) < new Date(tglPinjam)) return this.notify("Tanggal kembali tidak valid!", "error");
+
+                const bIdx = this.data.books.findIndex(b => b.id === bookId);
+                if(bIdx > -1 && this.data.books[bIdx].stock > 0) {
+                    this.data.books[bIdx].stock--;
+                    this.data.currentUser.history.unshift({ 
+                        bookId: bookId, title: this.data.books[bIdx].title, borrowDate: tglPinjam,
+                        dueDate: tglKembali, returnDate: null, fine: 0, finePaid: false, status: 'Dipinjam', 
+                        timestamp: Date.now(), paymentMethod: null 
+                    });
+                    this.saveData(); 
+                    this.closeModal('borrowModal'); 
+                    this.renderCatalog(); 
+                    this.renderPopularBooks();
+                    this.openBookDetail(bookId); 
+                    this.notify("Buku berhasil dipinjam! Jangan lupa tanggal kembali.", "success");
+                } else { this.notify("Gagal meminjam! Stok habis.", "error"); }
+            },
+
+            openReturnModal: function(loanIndex) {
+                this.data.activeLoanIndex = loanIndex;
+                const loan = this.data.currentUser.history[loanIndex];
+                if(!loan) return;
+                const today = new Date(); const due = new Date(loan.dueDate);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('returnBookTitle').textContent = `Buku: ${loan.title}`;
+                document.getElementById('retDueDate').textContent = due.toLocaleDateString('id-ID', options);
+                document.getElementById('retTodayDate').textContent = today.toLocaleDateString('id-ID', options);
+                const fineContainer = document.getElementById('fineSection');
+                const confirmBtn = document.getElementById('btnConfirmReturn');
+
+                confirmBtn.className = "btn btn-secondary btn-block";
+                confirmBtn.textContent = "Kembalikan Buku";
+                confirmBtn.disabled = false; confirmBtn.style.opacity = "1"; confirmBtn.style.transform = "translateY(0)";
+
+                const diffTime = today - due; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                let fineAmount = 0, isLate = false;
+                if (diffDays > 0) {
+                    isLate = true; fineAmount = diffDays * 5000; confirmBtn.disabled = true; 
+                    confirmBtn.textContent = "Harap Bayar Denda Terlebihulu"; confirmBtn.style.opacity = "0.5";
+                }
+                this.data.tempFine = fineAmount;
+                if (isLate) {
+                    fineContainer.style.display = 'block';
+                    document.getElementById('fineAmountDisplay').textContent = "Rp " + fineAmount.toLocaleString('id-ID');
+                    if(loan.finePaid) {
+                        document.getElementById('btnPayFine').style.display = 'none';
+                        document.getElementById('paidStatus').style.display = 'block';
+                        confirmBtn.disabled = false; confirmBtn.textContent = "KEMBALIKAN BUKU"; confirmBtn.style.opacity = "1";
+                    } else {
+                        document.getElementById('btnPayFine').style.display = 'inline-block';
+                        document.getElementById('paidStatus').style.display = 'none';
+                    }
+                } else { fineContainer.style.display = 'none'; }
+                this.openModal('returnModal');
+            },
+
+            openPaymentModal: function() {
+                this.closeModal('returnModal');
+                document.getElementById('payAmount').textContent = "Rp " + this.data.tempFine.toLocaleString('id-ID');
+                document.getElementById('paymentFormSection').style.display = 'block';
+                document.getElementById('paymentQRSection').style.display = 'none';
+                document.getElementById('paymentSuccessSection').style.display = 'none';
+                document.getElementById('payPhoneNumber').value = '';
+                this.data.selectedWallet = null;
+                document.querySelectorAll('.ewallet-option').forEach(el => el.classList.remove('selected'));
+                this.openModal('paymentModal');
+            },
+
+            selectWallet: function(el, walletName) {
+                document.querySelectorAll('.ewallet-option').forEach(e => e.classList.remove('selected'));
+                el.classList.add('selected');
+                this.data.selectedWallet = walletName;
+            },
+
+            cancelPayment: function() {
+                clearInterval(this.data.paymentTimerInterval);
+                this.openPaymentModal(); 
+            },
+
+            processPayment: function() {
+                if(!this.data.selectedWallet) return this.notify("Pilih metode pembayaran!", "error");
+                const phone = document.getElementById('payPhoneNumber').value;
+                if(phone.length < 10) return this.notify("Nomor HP tidak valid!", "error");
+
+                document.getElementById('paymentFormSection').style.display = 'none';
+                document.getElementById('paymentQRSection').style.display = 'flex';
+                
+                const qrData = `PAYMENT-${this.data.selectedWallet}-${this.data.tempFine}-${Date.now()}`;
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
+                document.getElementById('qrImage').src = qrUrl;
+                document.getElementById('qrWalletName').textContent = this.data.selectedWallet;
+
+                let timeLeft = 300; const timerEl = document.getElementById('qrTimer');
+                this.data.paymentTimerInterval = setInterval(() => {
+                    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                    const s = (timeLeft % 60).toString().padStart(2, '0');
+                    timerEl.textContent = `${m}:${s}`;
+                    if(timeLeft <= 0) {
+                        clearInterval(this.data.paymentTimerInterval);
+                        this.cancelPayment();
+                        this.notify("Waktu habis. Silakan coba lagi.", "error");
+                    }
+                    timeLeft--;
+                }, 1000);
+
+                setTimeout(() => {
+                    clearInterval(this.data.paymentTimerInterval);
+                    document.getElementById('paymentQRSection').style.display = 'none';
+                    document.getElementById('paymentSuccessSection').style.display = 'flex';
+                    setTimeout(() => {
+                        this.closeModal('paymentModal');
+                        this.data.currentUser.history[this.data.activeLoanIndex].finePaid = true;
+                        this.data.currentUser.history[this.data.activeLoanIndex].fine = this.data.tempFine;
+                        this.data.currentUser.history[this.data.activeLoanIndex].paymentMethod = this.data.selectedWallet;
+                        this.saveData(); 
+                        this.notify("Pembayaran Denda Berhasil!", "success");
+                        this.openReturnModal(this.data.activeLoanIndex); 
+                    }, 2000); 
+                }, 3000); 
+            },
+
+            executeReturn: function() {
+                const idx = this.data.activeLoanIndex;
+                const loan = this.data.currentUser.history[idx];
+                loan.status = 'Selesai';
+                loan.returnDate = new Date().toISOString().split('T')[0];
+                const bIdx = this.data.books.findIndex(b => b.id === loan.bookId);
+                if(bIdx > -1) this.data.books[bIdx].stock++;
+                this.saveData(); 
+                this.renderDashboard(); 
+                this.closeModal('returnModal');
+                if(this.data.tempFine > 0) this.notify(`Buku dikembalikan. Denda Rp ${this.data.tempFine.toLocaleString()} telah dibayar.`, "info");
+                else this.notify("Buku dikembalikan tepat waktu!", "success");
+            },
+
+            resetHistory: function() {
+                if(!confirm("Hapus semua riwayat?")) return;
+                const active = this.data.currentUser.history.filter(h => h.status === 'Dipinjam');
+                active.forEach(l => { const b = this.data.books.find(x => x.id === l.bookId); if(b) b.stock++; });
+                this.data.currentUser.history = [];
+                this.saveData(); this.renderDashboard(); this.notify("Riway direset.", "info");
+            },
+
+            renderAdminPanel: function() {
+                const totalBooks = this.data.books.length;
+                let borrowedBooks = 0, activeUsersCount = 0, bookReadCounts = {};
+
+                this.data.users.forEach(u => {
+                    const activeLoans = u.history.filter(h => h.status === 'Dipinjam');
+                    if(activeLoans.length > 0) { activeUsersCount++; borrowedBooks += activeLoans.length; }
+                    u.history.forEach(h => { bookReadCounts[h.bookId] = (bookReadCounts[h.bookId] || 0) + 1; });
+                });
+
+                document.getElementById('stat-total-books').textContent = totalBooks;
+                document.getElementById('stat-borrowed-books').textContent = borrowedBooks;
+                document.getElementById('stat-active-users').textContent = activeUsersCount;
+
+                const chartGrid = document.getElementById('chartGrid');
+                const chartBars = document.getElementById('chartBars');
+                const sortedBooks = Object.entries(bookReadCounts).sort((a, b) => b[1] - a[1]).slice(0, 5); 
+
+                if (sortedBooks.length === 0) {
+                    chartGrid.innerHTML = '';
+                    chartBars.innerHTML = `<div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; width:100%; z-index:2;"><p style="font-weight:700; color:#999;">Belum ada data peminjaman.</p></div>`;
+                } else {
+                    const maxCount = sortedBooks[0][1];
+                    const chartScaleMax = Math.ceil(maxCount * 1.2) || 10; 
+                    let gridHTML = '';
+                    for (let i = 0; i <= 4; i++) {
+                        const value = Math.round(chartScaleMax * (i / 4));
+                        gridHTML += `<div class="grid-line"><span>${value}</span></div>`;
+                    }
+                    chartGrid.innerHTML = gridHTML;
+                    let barsHTML = '';
+                    sortedBooks.forEach(([bookId, count], index) => {
+                        const book = this.data.books.find(b => b.id == bookId);
+                        const title = book ? book.title : "Unknown";
+                        const percentage = (count / chartScaleMax) * 100;
+                        let rankIcon = '';
+                        if (index === 0) rankIcon = '<div class="rank-badge">🥇</div>';
+                        else if (index === 1) rankIcon = '<div class="rank-badge">🥈</div>';
+                        else if (index === 2) rankIcon = '<div class="rank-badge">🥉</div>';
+                        const displayTitle = title.length > 10 ? title.substring(0, 8) + '..' : title;
+                        barsHTML += `
+                            <div class="chart-bar-group">
+                                ${rankIcon}
+                                <div class="bar-value">${count}</div>
+                                <div class="bar-visual" style="height: ${percentage}%;" title="${title}: ${count} Peminjaman"></div>
+                                <div class="bar-label" title="${title}">${displayTitle}</div>
+                            </div>
+                        `;
+                    });
+                    chartBars.innerHTML = barsHTML;
+                }
+
+                const tbody = document.getElementById('admin-book-list');
+                tbody.innerHTML = this.data.books.map(b => `<tr><td><img src="${b.cover}" style="width:40px; height:60px; border:2px solid #000; border-radius:4px;"></td><td><strong>${b.title}</strong></td><td>${b.author}</td><td>${b.category}</td><td>${b.genre}</td><td>${b.stock}</td><td>${this.getAvgRating(b).toFixed(1)}</td><td><button class="btn btn-sm" onclick="app.openEditModal(${b.id})"><i class="fas fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="app.deleteBook(${b.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+                this.renderAdminFeedbacks();
+            },
+
+            renderDashboard: function() {
+                const userView = document.getElementById('user-dashboard-view');
+                const adminView = document.getElementById('admin-dashboard-view');
+                if (this.data.currentUser.role === 'admin') {
+                    userView.style.display = 'none'; adminView.style.display = 'block'; this.renderAdminHistory();
+                } else {
+                    userView.style.display = 'block'; adminView.style.display = 'none'; this.renderUserHistory();
+                }
+            },
+
+            renderUserHistory: function() {
+                const tbody = document.getElementById('active-loans-body');
+                const active = this.data.currentUser.history.filter(h => h.status === 'Dipinjam');
+                if(active.length === 0) { 
+                    tbody.innerHTML = ''; 
+                    document.getElementById('empty-history').style.display = 'block'; 
+                    return; }
+                document.getElementById('empty-history').style.display = 'none';
+                tbody.innerHTML = active.map((l, i) => {
+                    const today = new Date(); const due = new Date(l.dueDate);
+                    const isLate = today > due;
+                    const statusBadge = isLate ? '<span class="stock-badge empty" style="animation:pulse 2s infinite">TERLAMBAT</span>' : '<span class="stock-badge ok">DIPINJAM</span>';
+                    return `
+                        <tr>
+                            <td><strong>${l.title}</strong></td>
+                            <td>${l.borrowDate}</td>
+                            <td>${l.dueDate}</td>
+                            <td>${statusBadge}</td>
+                            <td><button class="btn btn-sm btn-secondary" onclick="app.openReturnModal(${this.data.currentUser.history.indexOf(l)})">KEMBALIKAN</button></td>
+                        </tr>`;
+                }).join('');
+            },
+
+            renderAdminHistory: function() {
+                const tbody = document.getElementById('global-history-body');
+                let allHistory = [];
+                this.data.users.forEach(u => {
+                    u.history.forEach(h => { allHistory.push({ user: u.fullname, username: u.username, ...h }); });
+                });
+                allHistory.sort((a, b) => new Date(b.borrowDate) - new Date(a.borrowDate));
+                if(allHistory.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 2rem; color:#999;">Belum ada data peminjaman.</td></tr>'; return;
+                }
+                tbody.innerHTML = allHistory.map(h => {
+                    let statusBadge = '';
+                    if(h.status === 'Dipinjam') statusBadge = '<span class="stock-badge ok">DIPINJAM</span>';
+                    else if(h.status === 'Selesai') statusBadge = '<span class="stock-badge" style="background:#ccc; color:#000;">SELESAI</span>';
+                    let fineStatus = '';
+                    if(h.fine > 0) {
+                        if(h.finePaid) {
+                            const method = h.paymentMethod ? `Lunas via ${h.paymentMethod}` : 'Lunas';
+                            fineStatus = `<span class="stock-badge ok" style="background:#B9FBC0;">${method}</span>`;
+                        } else fineStatus = '<span class="stock-badge empty">BELUM BAYAR</span>';
+                    } else fineStatus = '<span style="color:#ccc;">-</span>';
+                    return `
+                        <tr>
+                            <td><strong>${h.user}</strong><br><small style="color:#666;">@${h.username}</small></td>
+                            <td>${h.title}</td>
+                            <td>${h.borrowDate}</td>
+                            <td>${h.dueDate}</td>
+                            <td>${h.returnDate || '-'}</td>
+                            <td>${statusBadge}</td>
+                            <td style="font-weight:700; color:${h.fine > 0 ? 'red' : 'inherit'};">Rp ${h.fine.toLocaleString('id-ID')}</td>
+                            <td>${fineStatus}</td>
+                        </tr>`;
+                }).join('');
+            },
+
+            renderAdminFeedbacks: function() {
+                const container = document.getElementById('admin-feedback-container');
+                if (!this.data.feedbacks || this.data.feedbacks.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding: 2rem; color:#888; font-weight:600; font-style:italic;">Belum ada pesan masuk.</div>`; return;
+                }
+                const sortedFeedbacks = [...this.data.feedbacks].sort((a, b) => b.date.localeCompare(a.date));
+                container.innerHTML = sortedFeedbacks.map((fb, index) => {
+                    const realIndex = this.data.feedbacks.indexOf(fb);
+                    let repliesHTML = '';
+                    if (fb.replies && fb.replies.length > 0) {
+                        repliesHTML = `<div class="admin-replies-area">${fb.replies.map(rep => `
+                            <div class="reply-item">
+                                <div class="reply-meta"><span style="color:var(--primary);">Admin Reply</span><span>${rep.date}</span></div>
+                                <div class="reply-text">${rep.text}</div>
+                            </div>
+                        `).join('')}</div>`;
+                    }
+                    return `
+                        <div class="admin-feedback-card">
+                            <div class="fb-header"><span class="fb-user-name">${fb.name}</span><span class="fb-date">${fb.date}</span></div>
+                            <div class="fb-content">"${fb.msg}"</div>
+                            ${repliesHTML}
+                            <form onsubmit="app.handleAdminReply(event, ${realIndex})" class="reply-form-wrapper">
+                                <input type="text" class="reply-input" placeholder="Tulis balasan..." required autocomplete="off">
+                                <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-paper-plane"></i> Balas</button>
+                            </form>
+                        </div>`;
+                }).join('');
+            },
+
+            handleAdminReply: function(e, index) {
+                e.preventDefault();
+                const form = e.target; const input = form.querySelector('input'); const text = input.value.trim();
+                if (!text) return;
+                if (!this.data.feedbacks[index].replies) this.data.feedbacks[index].replies = [];
+                this.data.feedbacks[index].replies.push({ text: text, date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' }) });
+                this.saveData(); this.renderAdminFeedbacks(); this.notify("Balasan terkirim!", "success"); form.reset();
+            },
+
+            handleImageUpload: function(input, pid) {
+                if(input.files && input.files[0]) {
+                    const r = new FileReader();
+                    r.onload = (e) => { 
+                        app.data.tempImageBase64 = e.target.result; 
+                        const imgEl = document.getElementById(pid);
+                        if(imgEl) { imgEl.src = e.target.result; imgEl.style.display = 'block'; }
+                    };
+                    r.readAsDataURL(input.files[0]);
+                }
+            },
+            openAddModal: function() {
+                ['addTitle','addAuthor','addYear','addStock','addSynopsis','addDescription'].forEach(id=>document.getElementById(id).value='');
+                document.getElementById('addPreview').style.display='none'; document.getElementById('addPopular').checked = false;
+                this.data.tempImageBase64=null; this.openModal('addModal');
+            },
+            handleAddBook: function(e) {
+                e.preventDefault();
+                if(!this.data.tempImageBase64) return this.notify("Upload cover dulu!", "error");
+                const synopsisVal = document.getElementById('addSynopsis').value;
+                const descVal = document.getElementById('addDescription').value;
+                const newBook = {
+                    id: Date.now(),
+                    title: document.getElementById('addTitle').value,
+                    author: document.getElementById('addAuthor').value,
+                    year: parseInt(document.getElementById('addYear').value),
+                    stock: parseInt(document.getElementById('addStock').value),
+                    category: document.getElementById('addCategory').value,
+                    genre: document.getElementById('addGenre').value,
+                    synopsis: synopsisVal, description: descVal,
+                    cover: this.data.tempImageBase64,
+                    isPopular: document.getElementById('addPopular').checked,
+                    reviews: []
+                };
+                this.data.books.push(newBook); 
+                this.saveData(); 
+                this.renderAdminPanel(); 
+                this.renderCatalog(); 
+                this.renderPopularBooks(); 
+                this.closeModal('addModal'); 
+                this.notify("Buku ditambah!", "success");
+            },
+            deleteBook: function(id) {
+                if(confirm("Hapus buku ini?")) {
+                    this.data.books = this.data.books.filter(b => b.id !== id);
+                    this.saveData(); this.renderAdminPanel(); this.renderCatalog(); this.renderPopularBooks(); this.notify("Buku dihapus.", "info");
+                }
+            },
+
+            // PERBAIKAN: Tampilan Form Ulasan
+            renderReviewForm: function() {
+                const form = document.getElementById('reviewForm');
+                const msg = document.getElementById('review-login-msg');
+                // Hanya tampilkan pesan login jika user BELUM login sama sekali
+                if (!this.data.currentUser) { 
+                    form.style.display = 'none'; 
+                    msg.style.display = 'block'; 
+                } else { 
+                    // Jika sudah login (baik user atau admin), sembunyikan pesan login
+                    msg.style.display = 'none'; 
+                    // Tampilkan form (Admin bisa mengisi ulasan jika mau)
+                    form.style.display = 'block'; 
+                }
+            },
+
+            // PERBAIKAN: Render Ulasan dengan Fitur Balas Admin
+            renderReviews: function(book) {
+                const list = document.getElementById('reviews-list');
+                if(!book.reviews || book.reviews.length === 0) { list.innerHTML = '<p style="font-weight:600; text-align:center;">Belum ada ulasan.</p>'; return; }
+                
+                const isAdmin = this.data.currentUser && this.data.currentUser.role === 'admin';
+
+                list.innerHTML = book.reviews.map((r, index) => {
+                    let stars = '';
+                    for(let i=1; i<=5; i++) stars += i <= r.rating ? '★' : '☆';
+
+                    // Render Replies
+                    let repliesHTML = '';
+                    if(r.replies && r.replies.length > 0) {
+                        repliesHTML = '<div class="review-replies-container">';
+                        r.replies.forEach(rep => {
+                            repliesHTML += `
+                                <div class="review-reply-bubble">
+                                    <span class="reply-admin-label"><i class="fas fa-shield-alt"></i> Admin Reply</span>
+                                    <div style="font-size:0.9rem;">${rep.text}</div>
+                                    <div style="font-size:0.7rem; color:#888; margin-top:5px;">${rep.date}</div>
+                                </div>
+                            `;
+                        });
+                        repliesHTML += '</div>';
+                    }
+
+                    // Tombol & Form Balas (Hanya untuk Admin)
+                    let adminActionHTML = '';
+                    if(isAdmin) {
+                        adminActionHTML = `
+                            <div id="review-reply-form-container-${index}" style="display:none; margin-top:10px;">
+                                <div class="review-reply-form">
+                                    <input type="text" id="review-reply-text-${index}" placeholder="Tulis balasan admin..." autocomplete="off">
+                                    <button class="btn btn-sm btn-primary" onclick="app.submitReviewReply(${book.id}, ${index})"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px; text-align:right;">
+                                <button class="btn btn-sm btn-secondary" onclick="app.toggleReviewReplyInput(${index})"><i class="fas fa-reply"></i> Balas</button>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user">${r.user}</div>
+                                <div class="review-rating">${stars}</div>
+                            </div>
+                            <div class="review-text">"${r.comment}"</div>
+                            ${repliesHTML}
+                            ${adminActionHTML}
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            // Fungsi Buka/Tutup Input Balas
+            toggleReviewReplyInput: function(reviewIndex) {
+                const container = document.getElementById(`review-reply-form-container-${reviewIndex}`);
+                if(container.style.display === 'none') {
+                    container.style.display = 'block';
+                    document.getElementById(`review-reply-text-${reviewIndex}`).focus();
+                } else {
+                    container.style.display = 'none';
+                }
+            },
+
+            // Fungsi Kirim Balasan Ulasan (Admin)
+            submitReviewReply: function(bookId, reviewIndex) {
+                const input = document.getElementById(`review-reply-text-${reviewIndex}`);
+                const text = input.value.trim();
+
+                if(!text) return this.notify("Tulis balasan dulu!", "error");
+
+                // Cari Buku
+                const book = this.data.books.find(b => b.id === bookId);
+                if(!book || !book.reviews[reviewIndex]) return;
+
+                // Pastikan array replies ada
+                if(!book.reviews[reviewIndex].replies) {
+                    book.reviews[reviewIndex].replies = [];
+                }
+
+                // Tambah Reply
+                book.reviews[reviewIndex].replies.push({
+                    text: text,
+                    date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' })
+                });
+
+                this.saveData();
+                this.renderReviews(book); // Render ulang untuk menampilkan balasan baru
+                this.notify("Balasan terkirim ke ulasan user!", "success");
+            },
+
+            submitReview: function(e) {
+                e.preventDefault();
+                const ratingInput = document.querySelector('input[name="rating"]:checked');
+                if(!ratingInput) return this.notify("Pilih bintang!", "error");
+                const b = this.data.books.find(x => x.id === this.data.activeBookId);
+                if(!b) return;
+                
+                b.reviews.unshift({ 
+                    id: Date.now(), 
+                    user: this.data.currentUser.fullname, 
+                    rating: parseInt(ratingInput.value), 
+                    comment: document.getElementById('reviewText').value,
+                    replies: [] // Init array replies
+                });
+                
+                this.saveData(); 
+                this.renderReviews(b); 
+                this.renderReviewForm(); 
+                this.renderCatalog(); 
+                this.renderPopularBooks(); 
+                this.openBookDetail(b.id); 
+                this.notify("Ulasan terkirim!", "success");
+            },
+            
+            getAvgRating: function(b) { 
+                if(!b.reviews || b.reviews.length === 0) return 0;
+                return b.reviews.reduce((a,c) => a + c.rating, 0) / b.reviews.length; 
+            },
+            
+            handleLogin: function(e) {
+                e.preventDefault();
+                const usernameInput = document.getElementById('loginUsername').value;
+                const passwordInput = document.getElementById('loginPassword').value;
+                const u = this.data.users.find(x => x.username === usernameInput && x.password === passwordInput);
+                if(u) {
+                    this.data.currentUser = u; 
+                    localStorage.setItem('pink_session', u.username);
+                    this.updateUIForUser(); 
+                    this.closeModal('loginModal'); 
+                    this.notify(`Halo, ${u.fullname}!`, "success");
+                    this.navigate(u.role === 'admin' ? 'admin' : 'catalog');
+                } else { this.notify("Username atau password salah!", "error"); }
+            },
+            handleRegister: function(e) {
+                e.preventDefault();
+                const u = { 
+                    username: document.getElementById('regUsername').value, 
+                    password: document.getElementById('regPassword').value, 
+                    fullname: document.getElementById('regFullname').value, 
+                    role: 'user', 
+                    history: [] 
+                };
+                if(this.data.users.find(x => x.username === u.username)) return this.notify("Username sudah ada!", "error");
+                this.data.users.push(u); 
+                this.saveData(); 
+                this.notify("Pendaftaran sukses! Silakan login.", "success"); 
+                this.closeModal('registerModal'); 
+                this.openModal('loginModal');
+            },
+            logout: function() {
+                this.data.currentUser = null; 
+                localStorage.removeItem('pink_session');
+                this.updateUIForUser(); 
+                this.navigate('home'); 
+                this.notify("Logout berhasil.", "info");
+            },
+            
+            handleContactSubmit: function(e) {
+                e.preventDefault();
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+                btn.disabled = true;
+                const templateParams = {
+                    from_name: e.target.from_name.value,
+                    reply_to: e.target.reply_to.value,
+                    message: e.target.message.value,
+                };
+                emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
+                .then((response) => {
+                    console.log('SUCCESS!', response.status, response.text);
+                    app.notify("Feedback berhasil dikirim!", "success");
+                    app.saveFeedbackLocal(e.target.from_name.value, e.target.message.value);
+                    e.target.reset();
+                })
+                .catch((error) => {
+                    console.error('FAILED...', error);
+                    app.notify("Gagal mengirim email. Cek koneksi Anda.", "error");
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+            },
+
+            saveFeedbackLocal: function(name, msg) {
+                const newFeedback = { name: name, msg: msg, date: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) };
+                this.data.feedbacks.unshift(newFeedback);
+                this.saveData();
+                this.renderFeedbacks();
+            },
+            renderFeedbacks: function() {},
+            openModal: function(id) { 
+                const el = document.getElementById(id);
+                if(el) el.style.display = 'flex'; 
+            },
+            closeModal: function(id) { 
+                const el = document.getElementById(id);
+                if(el) el.style.display = 'none'; 
+                if(id === 'paymentModal') clearInterval(this.data.paymentTimerInterval);
+            },
+            notify: function(msg, type) {
+                const container = document.getElementById('notification-container');
+                const div = document.createElement('div'); 
+                div.className = `toast ${type}`;
+                div.innerHTML = `<span>${type==='success'?'✅':(type==='error'?'❌':'ℹ️')}</span> <span>${msg}</span>`;
+                container.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+        };
+
+        window.onload = () => app.init();
+        window.onclick = (e) => { 
+            if(e.target.classList.contains('modal')) {
+                e.target.style.display = 'none'; 
+                if(e.target.id === 'paymentModal') clearInterval(app.data.paymentTimerInterval);
+            }
+        };
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
